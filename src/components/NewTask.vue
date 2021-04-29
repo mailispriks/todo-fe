@@ -30,7 +30,7 @@
         <div class="inline-block w-2 h-2 rounded-full mr-2" :class="'bg-' + form.color.toLowerCase() + '-400'" />
         <label for="color" class="inline-block text-sm font-medium text-gray-700">Color</label>
 
-        <select name="color" class="mt-1 block w-full border-gray p-1">
+        <select v-model="form.color" name="color" class="mt-1 block w-full border-gray p-1">
           <option value="GRAY">Gray</option>
           <option value="BLUE">Blue</option>
           <option value="INDIGO">Indigo</option>
@@ -55,7 +55,7 @@ export default {
     return {
       form: {
         title: '',
-        date: null,
+        date: new Date(),
         priority: 'MEDIUM',
         color: 'GRAY'
       }
@@ -67,9 +67,9 @@ export default {
   computed: {
     priorityColor() {
       const mappings = {
-        High: "red",
-        Medium: "yellow",
-        Low: "green",
+        HIGH: "red",
+        MEDIUM: "yellow",
+        LOW: "green",
         default: "teal"
       };
       return mappings[this.form.priority] || mappings.default;
@@ -82,6 +82,13 @@ export default {
         method: 'POST',
         data: this.form
       })
+      this.$emit('task-added')
+      this.form = {
+        title: '',
+        date: new Date(),
+        priority: 'MEDIUM',
+        color: 'GRAY'
+      }
     }
   }
 };

@@ -5,6 +5,7 @@
         <div class="bg-gray-100 rounded-lg px-3 py-3 column-double-width rounded mr-4">
           <p class="text-gray-700 font-semibold font-sans tracking-wide text-sm">Add new todo</p>
           <new-task class="my-3" @task-added="getTasks"/>
+          <download-file/>
         </div>
       </div>
 
@@ -43,17 +44,27 @@ import draggable from "vuedraggable";
 import TaskCard from "./components/TaskCard.vue";
 import NewTask from "./components/NewTask.vue";
 import axios from 'axios';
+import DownloadFile from './components/DownloadFile'
 
 export default {
   name: "App",
   components: {
     TaskCard,
     draggable,
-    NewTask
+    NewTask,
+    DownloadFile
   },
   data() {
     return {
       columns: [
+        {
+          title: "Todo",
+          tasks: []
+        },
+        {
+          title: "Done",
+          tasks: []
+        }
       ]
     };
   },
@@ -62,24 +73,23 @@ export default {
   },
   methods: {
     async getTasks () {
-      const resTodo = await axios({
-        url: 'api/todo-tasks',
+      const res = await axios({
+        url: 'api/tasks',
         method: 'GET'
       })
 
-      const resDone = await axios({
-        url: 'api/done-tasks',
-        method: 'GET'
-      })
-
-      this.columns.push(resTodo.data[0])
-      this.columns.push(resDone.data[0])
+      this.columns = res.data
     },
     async moveTask (event, column) {
       if (event.added) {
         if (column.title === 'Done') {
           await axios({
             url: `api/moveTask/${event.added.element._id}/done`,
+            method: 'GET'
+          })
+        } else if (column.title === 'Todo') {
+          await axios({
+            url: `api/moveTask/${event.added.element._id}/todo`,
             method: 'GET'
           })
         }
